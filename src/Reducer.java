@@ -9,42 +9,42 @@ import java.io.OutputStreamWriter;
 
 public class Reducer {
 	// Array with paths to all files
-	private String[] sourceFiles;
-	private String mergedFilePath;
-	private File[] files;
-	private File mergedFile;
+	private String path_file_in;
+	private String path_file_out;
+	private int id_of_operation;
 	
-	public Reducer(String[] sourcesFiles, String mergedFilePath) {
-		this.sourceFiles = sourcesFiles;
-		this.mergedFilePath = mergedFilePath;
+	public Reducer(int id_of_operation, String path_file_in, String path_file_out) {
+		this.id_of_operation = id_of_operation;
+		this.path_file_in = path_file_in;
+		this.path_file_out = path_file_out;
 	}
 	
 	public void reduceMerge(){
-		// Inisalisation for reading and writing files
-		files = new File[sourceFiles.length];
-		for (int i = 0; i < sourceFiles.length; i++) {
-			files[i] = new File(sourceFiles[i]);
-		}
-		mergedFile = new File(mergedFilePath);
-		File pathMergedFile = mergedFile.getParentFile();
-		if (!pathMergedFile.exists()){
-			pathMergedFile.mkdirs(); // create parent directory and ancestors if necessary
+		
+		// Path to write file
+		String file_out = path_file_out + id_of_operation;
+		File outFile = new File(file_out);
+		File pathoutFile = outFile.getParentFile();
+		if (!pathoutFile.exists()){
+			pathoutFile.mkdirs(); // create parent directory and ancestors if necessary
 		}
 		
-		// Prepare to write the mergedFile
+		// Prepare to write the outFile
 		BufferedWriter out = null;
 		try {
-			out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(mergedFile), "UTF-8"));
+			out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), "UTF-8"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
+		// Open folder with all files
+		File folder_in = new File(path_file_in);
 		// Read all files
-		for (File f : files) {
+		for (File file_in : folder_in.listFiles()) {
 			// Prepare reader for each file
 			BufferedReader in = null;
 			try {
-				in = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
+				in = new BufferedReader(new InputStreamReader(new FileInputStream(file_in), "UTF-8"));
 				// Write lines in a mergeFile
 				String aLine;
 				while((aLine = in.readLine()) != null) {

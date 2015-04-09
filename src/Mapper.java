@@ -10,6 +10,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -22,8 +24,7 @@ public class Mapper {
 	// Variables for read and write file
 	private String path_file_in;
 	private String path_file_out;
-	private String tag_for_search;
-	private String file_name;
+	private int id_of_operation;
 	
 	// Variable for parsing JSON
 	private List<String> medias = new ArrayList<String>();
@@ -35,23 +36,16 @@ public class Mapper {
 	private int likes_count;
 	
 	// Constructor for Mapper_COUNT
-	public Mapper(String file_name,String path_file_in, String path_file_out) {
-		this.file_name = file_name;
+	public Mapper(int id_of_operation, String path_file_in, String path_file_out) {
+		this.id_of_operation = id_of_operation;
 		this.path_file_in = path_file_in;
 		this.path_file_out = path_file_out;
-	}
-	
-	// Constructor for Mapper_SELECT
-	public Mapper(String file_name, String path_file_in, String path_file_out, String tag_for_search) {
-		this.file_name = file_name;
-		this.path_file_in = path_file_in;
-		this.path_file_out = path_file_out;
-		this.tag_for_search = tag_for_search;
 	}
 	
 	// Write results in new file
 	private void writeInFile(){
 		try {
+			String file_name = String.valueOf(id_of_operation);
 			String file_to_write = path_file_out + file_name;
 			File fileDir_write = new File(file_to_write);
 			File paretnDir = new File(path_file_out);
@@ -70,42 +64,110 @@ public class Mapper {
 		}
 	}
 	
+	
+	public void sortByLike() {
+		try{
+			List<MediaMap> listMedia = new ArrayList<MediaMap>();
+			// Open folder with all files
+			File folder_in = new File(path_file_in);
+			Gson gson = new GsonBuilder().create();
+			// For each file in folder do
+			for (File file_in : folder_in.listFiles()){
+				BufferedReader in =  new BufferedReader(new InputStreamReader(new FileInputStream(file_in), "UTF-8"));
+				String str;
+				while ((str = in.readLine()) != null) {
+					MediaMap media = gson.fromJson(str, MediaMap.class); 	// Transform JSON to the object
+					listMedia.add(media); 
+				} 
+				in.close();
+				file_in.delete();
+			}
+			Collections.sort(listMedia, new MediaMapComparatorLike());
+			Iterator<MediaMap> it = listMedia.iterator();
+			String media_json;
+			while (it.hasNext()) {
+				MediaMap m = it.next();
+				media_json = gson.toJson(m);
+				medias.add(media_json);
+			}
+			writeInFile();
+		}
+		catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+	public void sortByCreatedTime() {
+		try{
+			List<MediaMap> listMedia = new ArrayList<MediaMap>();
+			// Open folder with all files
+			File folder_in = new File(path_file_in);
+			Gson gson = new GsonBuilder().create();
+			// For each file in folder do
+			for (File file_in : folder_in.listFiles()){
+				BufferedReader in =  new BufferedReader(new InputStreamReader(new FileInputStream(file_in), "UTF-8"));
+				String str;
+				while ((str = in.readLine()) != null) {
+					MediaMap media = gson.fromJson(str, MediaMap.class); 	// Transform JSON to the object
+					listMedia.add(media); 
+				} 
+				in.close();
+				file_in.delete();
+			}
+			Collections.sort(listMedia, new MediaMapComparatorCreatedTime());
+			
+			Iterator<MediaMap> it = listMedia.iterator();
+			String media_json;
+			while (it.hasNext()) {
+				MediaMap m = it.next();
+				media_json = gson.toJson(m);
+				medias.add(media_json);
+			}
+			writeInFile();
+		} 
+		catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+		
+	}
+	
 	public void mapCount(){
 		try{
-			// Read file in predefined directory
-			String file_to_read = path_file_in + file_name;
-			File fileDir_in = new File(file_to_read);
-			BufferedReader in =  new BufferedReader(new InputStreamReader(new FileInputStream(fileDir_in), "UTF-8"));
-			
-			// Read string by string
-			String str;
-			String media_json;
-			Gson gson = new GsonBuilder().create();
-			while ((str = in.readLine()) != null) {
-				MediaInstagram media = gson.fromJson(str, MediaInstagram.class); 	// Transform JSON to the object
-				List<String> tags = media.getTags(); 							 	// Get list of the TAGS from this object
-				user_id = media.getUser_id();										// USER_ID
-				link = media.getLink();												// LINK
-				created_time = media.getCreated_time();								// CREATED_TIME
-				media_id = media.getMedia_id();										// MEDIA_ID
-				img_url = media.getImg_url();										// IMG_URL
-				likes_count = media.getLikes_count();								// LIKES_COUNT
-				// Creating new objects, each object contain only one tag
-				for (int i = 0; i < tags.size(); i++) {
-					MediaMap media_count = new MediaMap(); 		// Create new object
-					media_count.setUser_id(user_id);
-					media_count.setTags(tags.get(i));
-					media_count.setLink(link);
-					media_count.setCreated_time(created_time);
-					media_count.setMedia_id(media_id);
-					media_count.setImg_url(img_url);
-					media_count.setLikes_count(likes_count);
-					media_json = gson.toJson(media_count);		// Transform object to the JSON
-					medias.add(media_json);						// Store this JSON string in global list
-				} // end for
-			} // end while
-			in.close();
-			
+			// Open folder with all files
+			File folder_in = new File(path_file_in);
+			// For each file in folder do
+			for (File file_in : folder_in.listFiles()){
+				BufferedReader in =  new BufferedReader(new InputStreamReader(new FileInputStream(file_in), "UTF-8"));
+				// Read string by string
+				String str;
+				String media_json;
+				Gson gson = new GsonBuilder().create();
+				while ((str = in.readLine()) != null) {
+					MediaInstagram media = gson.fromJson(str, MediaInstagram.class); 	// Transform JSON to the object
+					List<String> tags = media.getTags(); 							 	// Get list of the TAGS from this object
+					user_id = media.getUser_id();										// USER_ID
+					link = media.getLink();												// LINK
+					created_time = media.getCreated_time();								// CREATED_TIME
+					media_id = media.getMedia_id();										// MEDIA_ID
+					img_url = media.getImg_url();										// IMG_URL
+					likes_count = media.getLikes_count();								// LIKES_COUNT
+					// Creating new objects, each object contain only one tag
+					for (int i = 0; i < tags.size(); i++) {
+						MediaMap media_count = new MediaMap(); 		// Create new object
+						media_count.setUser_id(user_id);
+						media_count.setTags(tags.get(i));
+						media_count.setLink(link);
+						media_count.setCreated_time(created_time);
+						media_count.setMedia_id(media_id);
+						media_count.setImg_url(img_url);
+						media_count.setLikes_count(likes_count);
+						media_json = gson.toJson(media_count);		// Transform object to the JSON
+						medias.add(media_json);						// Store this JSON string in global list
+					} // end for
+				} // end while
+				in.close();
+				file_in.delete();
+			} // end for
 			// Write new file with results
 			writeInFile();
 		}
@@ -114,44 +176,28 @@ public class Mapper {
         }
 	}
 	
-	public void mapSelect(){
+	public void mapSelect(String tag_for_search){
 		try{
-			// Read file in predefined directory
-			String file_to_read = path_file_in + file_name;
-			File fileDir_in = new File(file_to_read);
-			BufferedReader in =  new BufferedReader(new InputStreamReader(new FileInputStream(fileDir_in), "UTF-8"));
-			
-			// Read string by string
-			String str;
-			String media_json;
-			Gson gson = new GsonBuilder().create();
-			while ((str = in.readLine()) != null) {
-				MediaInstagram media = gson.fromJson(str, MediaInstagram.class); 	// Transform JSON to the object
-				List<String> tags = media.getTags(); 							 	// Get list of the TAGS from this object
-				user_id = media.getUser_id();										// USER_ID
-				link = media.getLink();												// LINK
-				created_time = media.getCreated_time();								// CREATED_TIME
-				media_id = media.getMedia_id();										// MEDIA_ID
-				img_url = media.getImg_url();										// IMG_URL
-				likes_count = media.getLikes_count();								// LIKES_COUNT
-				// Creating new objects, each object contain only one tag
-				for (int i = 0; i < tags.size(); i++) {
-					if( tag_for_search.equals(tags.get(i))){
-						MediaMap media_select = new MediaMap(); 		// Create new object
-						media_select.setUser_id(user_id);
-						media_select.setTags(tag_for_search);
-						media_select.setLink(link);
-						media_select.setCreated_time(created_time);
-						media_select.setMedia_id(media_id);
-						media_select.setImg_url(img_url);
-						media_select.setLikes_count(likes_count);
-						media_json = gson.toJson(media_select);		// Transform object to the JSON
-						medias.add(media_json);						// Store this JSON string in global list
-					}
-				} // end for
-			} // end while
-			in.close();
-			
+			// Open folder with all files
+			File folder_in = new File(path_file_in);
+			// For each file in folder do
+			for (File file_in : folder_in.listFiles()){
+				BufferedReader in =  new BufferedReader(new InputStreamReader(new FileInputStream(file_in), "UTF-8"));
+				// Read string by string
+				String str;
+				String media_json;
+				Gson gson = new GsonBuilder().create();
+				while ((str = in.readLine()) != null) {
+					MediaMap media = gson.fromJson(str, MediaMap.class); 	// Transform JSON to the object
+					String tag = media.getTags();
+					if( tag_for_search.equals(tag)){
+						media_json = gson.toJson(media);		// Transform object to the JSON
+						medias.add(media_json);					// Store this JSON string in global list
+					} // end for
+				} // end while
+				in.close();
+				file_in.delete();
+			} // end for
 			// Write new file with results
 			writeInFile();
 		}
