@@ -1,0 +1,70 @@
+
+
+
+<!-- body-content -->
+<div class="body-content clearfix" >
+
+    <div class="bg-color2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9">
+
+                    <!-- box listing -->
+                    <div class="block-section-sm box-list-area">
+
+                        <!-- desc top -->
+                        <div class="row hidden-xs">
+                            <div class="col-sm-6  ">
+                                <p><strong class="color-black">PHP jobs in United States</strong></p>
+                            </div>
+                            <div class="col-sm-6">
+                                <p class="text-right">
+                                </p>
+                            </div>
+                        </div><!-- end desc top -->
+
+                        <!-- item list -->
+                        <div class="box-list">
+
+                            {% for r in results %}
+
+                            <div class="item">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5><span class="color-black">{{ r.user_id }}</span> - <span class="color-white-mute">{{ r.tags }}</span></h5>
+                                        <a href="{{ r.link }}" target="_blank">
+                                            <h5><span class="color-black">Link to Post</span> </h5>
+                                        </a>
+                                        <h5><span class="color-black">Posted At: </span> - <span class="color-white-mute">{{ r.created_time|date("m/d/Y H:i:s") }}</span></h5>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <a href="{{ r.link }}" target="_blank">
+                                            <img src="{{ r.img_url }}" style="width:100%;box-shadow: 0 0 10px #888888;" />
+                                        </a>
+                                    </div>
+                                </div>
+                            </div><!-- end item list -->
+
+                            {% endfor %}
+
+
+                        </div>
+
+
+                    </div><!-- end box listing -->
+
+
+                </div>
+                <div class="col-md-3">
+
+
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+</div><!--end body-content -->
