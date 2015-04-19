@@ -45,4 +45,12 @@ public class Parameter {
     //Slave Count
     public static final int slave_count = 1;
 
+    //Logger paths
+    public static final String log_dir = "log\\";
+    public static final String log_file = "log.txt";
+
+    //Easy Printer
+    public static void print(String str){
+        System.out.println(str);
+    }
 }

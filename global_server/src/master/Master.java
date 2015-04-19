@@ -26,7 +26,6 @@ public class Master {
      * Constructor
      */
     public Master()
-
     {
         scheduler = new TaskScheduler();
         initSlaveMachines();
@@ -52,7 +51,7 @@ public class Master {
             );
             slaves[i] = tracker;
         }
-        printSlaves();
+        //printSlaves();
         //TODO Verify connection with all Slaves, else set status == error
     }
 
@@ -88,7 +87,7 @@ public class Master {
                 break;
             case 1:
                 System.out.println("Task has just been sorted");
-                assignTaskToSchuler(task);
+                sendResponseToGeneralServer(task);
                 break;
             default:
                 task.status = Messages.task_completed;
@@ -99,17 +98,6 @@ public class Master {
 
         }
 
-        System.err.println("Response from Server Result: " + task.toString());
-    }
-
-
-    public void sendResponseToGeneralServer(Task task ){
-        System.out.println("------------------------");
-        System.out.println("JOB CCOMPLETED");
-        System.out.println("Results In: " + task.result);
-        System.out.println("------------------------");
-        ResponseToGeneralServer response = new ResponseToGeneralServer(task);
-        response.init();
     }
 
     /**
@@ -124,6 +112,16 @@ public class Master {
         }else{
             slaves[id].status = Messages.status_error;
         }
+    }
+
+    public void sendResponseToGeneralServer(Task task ){
+        System.out.println("------------------------");
+        System.out.println("JOB CCOMPLETED");
+        System.out.println("Results In: " + task.result);
+        System.out.println("------------------------");
+        scheduler.remove(task, true);
+        ResponseToGeneralServer response = new ResponseToGeneralServer(task);
+        response.init();
     }
 
     /**
@@ -147,12 +145,12 @@ public class Master {
                 taskMapSort(task);
                 break;
             default:
-                System.err.println("Task has been completed");
+                System.out.println("Task has been completed");
                 //TODO send back response to General Server
                 break;
         }
 
-        System.err.println("Map reduce level : "  + map_reduce_level);
+        System.out.println("Map reduce level : "  + map_reduce_level);
     }
 
     /**
@@ -181,7 +179,7 @@ public class Master {
     public void taskMapCount(Task task)
     {
         ArrayList<Integer> index = getFreeSlave();
-        System.out.println("Assigning Task to : " + index);
+        System.out.println("Assigning Count Task to : " + index);
         if (!index.isEmpty()) {
             //Distributing work load
             HashMap<Integer, String> options = distributeWorkLoad(index, task);

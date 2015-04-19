@@ -36,7 +36,7 @@ public class RequestSlave {
      * Setting up Socket
      */
     public void init(){
-        System.err.println(" Request Slave : " + task.toString());
+        System.out.println(" Request Slave : " + task.toString());
         try{
 
             socket = new Socket(host, port);

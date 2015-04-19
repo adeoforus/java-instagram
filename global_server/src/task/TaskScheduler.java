@@ -99,14 +99,23 @@ public class TaskScheduler {
      * Removing a task
      * @param task
      */
-    public void remove(Task task)
+    public void remove(Task task){
+        remove(task, false);
+    }
+
+    /**
+     * Removing a task
+     * @param task
+     * @param force
+     */
+    public void remove(Task task, boolean force)
     {
         for(int i=0;i<queue.size();i++)
         {
             Task t = queue.get(i);
             if(t.task_id == task.task_id)
             {
-                if(t.status.equals(Messages.task_completed))
+                if(t.status.equals(Messages.task_completed) || force )
                 {
                     queue.remove(task);
                     dependencies.remove(i);

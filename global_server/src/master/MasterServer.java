@@ -81,21 +81,18 @@ public class MasterServer {
             //Recieved Task Request
             if(command[0].equals(Messages.type_request))
             {
-                System.err.println("Recieved Request From General Server");
+                System.out.println("Recieved Request From General Server");
                 Gson gson = new Gson();
                 Task task = gson.fromJson(command[1], Task.class);
                 //Call Master
                 master.assignTaskToSchuler(task);
-                System.err.println("");
-//                close();
             }
             //Recieved Response from Slave
             else
             {
-                System.err.println("Recieved Response From Slave");
+                System.out.println("Recieved Response From Slave");
+                //Call Master
                 master.updateScheduler(command[1]);
-                System.err.println("");
-//                close();
             }
         }
         catch (IOException e){

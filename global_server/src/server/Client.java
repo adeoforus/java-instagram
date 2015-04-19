@@ -49,22 +49,18 @@ public class Client {
 
         try{
             serverSocket = new ServerSocket(port);
-            while(true) {
-                System.out.println("Waiting for General Server Response");
-                socket = serverSocket.accept();
+            System.out.println("Waiting for General Server Response");
+            socket = serverSocket.accept();
 
-                theIn = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream())
-                );
+            theIn = new BufferedReader(
+                    new InputStreamReader(socket.getInputStream())
+            );
 
-                //read Response
-                readResponse();
+            //read Response
+            readResponse();
 
-                theIn.close();
-                socket.close();
-                System.exit(999);
-            }
-
+            theIn.close();
+            socket.close();
         }
         catch (IOException e){
             e.printStackTrace();
